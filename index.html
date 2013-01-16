@@ -3,21 +3,25 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <script src="js/Point.js"></script>
-        <script src="js/Vector.js"></script>
-        <script src="js/Leg.js"></script>
-        <script src="js/Microb.js"></script>
-        <script src="js/Pool.js"></script>
-        <script src="js/PoolRenderer.js"></script>
-        <script src="js/gui.js"></script>
+        <script src='js/libs/require.min.js'></script>    
     </head>
-    <body onload="gui.run()">
+    <body>
         <div>Инфузория</div>
         
-        <button id='stop' onclick='gui.pause()'>Pause</button>
-        <button id='cont' onclick='gui.start()'>Continue</button>
-        <button id='stop' onclick='gui.stop()'>Stop</button>
+        <button id='pause'>Pause</button>
+        <button id='cont'>Continue</button>
+        <button id='stop'>Stop</button>
         <span id='fps'>0</span>
+        <br>
         <canvas id="mainCanvas" width="1000" height="500">Your browser don't support CANVAS tag</canvas>
+        <script>
+            requirejs.config({
+                baseUrl: 'js'
+            });
+            
+            require(['gui'], function(gui){
+                gui.run();
+            });
+        </script>    
     </body>
 </html>
