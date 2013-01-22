@@ -32,7 +32,7 @@ define(function(require) {
             this.renderer = new PoolRenderer(ctx);
 
             this.pool = new Pool();
-            this.pool.init(500);
+            this.pool.init(100);
         },
         start: function()
         {
@@ -40,9 +40,9 @@ define(function(require) {
             self.fpsCount = 0;
             self.startTime = new Date().getTime();
             self.lifeLoop = setInterval(function() {
-                self.pool.update();
                 self.fpsCount++
-
+                self.pool.update();
+                
             }, 1)
 
             self.renderLoop = setInterval(function() {
@@ -52,8 +52,8 @@ define(function(require) {
                 self.fpsLabel.innerHTML = 'tiks/s:' + Math.round((self.fpsCount / dt)) + ' fps:' + Math.round(1 / dt) + ' time(s):' + time;
                 self.fpsCount = 0;
                 self.lastTime = current;
-                //   self.renderer.render(self.pool);
-            }, 30)
+                self.renderer.render(self.pool);
+            }, 30 )
 
         },
         pause: function()

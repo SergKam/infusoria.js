@@ -2,13 +2,17 @@ define(function(require) {
     'use strict';
 
     var Microb = require('Microb');
-
+    var Places = require('Places');
+    var Box = require('geometry/Box');
+    var Point = require('geometry/Point');
     function Pool()
     {
         this.lastId = 0;
         this.microbs = {};
+        this.places = new Places();
     }
-
+var poolBox = new Box(new Point(-1,-1), new Point(1,1));
+    
     Pool.prototype = {
         init: function(count)
         {
@@ -37,24 +41,22 @@ define(function(require) {
 
             for (var id in this.microbs)
             {
-                this.microbs[id].update();
-                this.collisionTest(this.microbs[id]);
+                var microb = this.microbs[id];
+                this.places.removeBox(microb.getContainerBox(), microb.id);
+                microb.update();
+                var newContainer = microb.getContainerBox();
+                var collisions = this.places.getBox(newContainer);
+                if(collisions.length){
+                    //colision
+               //     console.log(microb.id,'collision with',collisions);
+                };
+                
+                this.places.setBox(newContainer,  microb.id);
+                
                 count++;
             }
 
             this.count = count;
-        },
-        collisionTest: function(target)
-        {
-            for (var id in this.microbs)
-            {
-                if (target === this.microbs[id])
-                {
-                    continue;
-                }
-
-                this.microbs[id].collisionTest(target);
-            }
         }
 
     }

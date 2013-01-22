@@ -14,6 +14,12 @@ define(function(require) {
             this.y = this.y + Math.sin(vector.angle) * vector.length;
             return this;
         },
+        addPoint: function(point)
+        {
+            this.x = this.x + point.x;
+            this.y = this.y + point.y;
+            return this;
+        },
         getDistace: function(point)
         {
             var width = Math.abs(this.x - point.x);

@@ -1,12 +1,13 @@
 define(function(require) {
     'use strict';
-    var Point = require('Point');
-    var Vector = require('Vector');
+    var Point = require('geometry/Point');
+    var Box = require('geometry/Box');
+    var Vector = require('geometry/Vector');
     var Leg = require('Leg');
-
 
     function Microb(pool)
     {
+        this.id = 0;
         this.pool = pool;
         this.dna = 'xfgdsgdsddsfg.,jdghsb gksbcs';
         this.size = Math.random() / 100;
@@ -14,12 +15,14 @@ define(function(require) {
                 Math.round(Math.random() * 255) + ',' +
                 Math.round(Math.random() * 255) + ',100)';
 
-        this.position = new Point(Math.random() * 2 - 1, Math.random() * 2 - 1);
+        this.position = new Point(Math.random() * 1 - 0.5, Math.random() * 1 - 0.5);
         this.vector = new Vector(Math.random() * Math.PI * 2, Math.random() / 200);
         this.legs = [];
         this.initLegs();
+        this.updateSize();
     }
-
+    var poolBox = new Box(new Point(-0.7,-0.7), new Point(0.7,0.7));
+    
     Microb.prototype = {
 
         update: function()
@@ -31,14 +34,20 @@ define(function(require) {
             var newPosition = this.position.clone();
 
             newPosition.addVector(this.vector);
-
-            if (newPosition.x > 1 || newPosition.x < -1 || newPosition.y > 1 || newPosition.y < -1)
+            
+            if (!this.getContainerBox(newPosition).isInside(poolBox))
             {
-                this.vector.angle = Math.random() * Math.PI * 2;
+                this.vector.rotate(Math.PI);
+                
+                this.vector.length = 0.2;
+                this.updateSize();
+                
                 this.move();
+                this.vector.length = Math.random() / 200;
+                
                 return;
             }
-            this.vector.rotate((Math.random() - 0.5) / 10);
+           // this.vector.rotate((Math.random() - 0.5) / 10);
 
             this.position = newPosition;
 
@@ -52,7 +61,7 @@ define(function(require) {
                 if (target.size > 0.03 && this.size > 0.03)
                 {
                     this.born(target);
-                    return
+                    return;
                 }
 
                 if (target.size < this.size)
@@ -93,9 +102,24 @@ define(function(require) {
             }, 1000);
 
         },
+                
         die: function()
         {
             this.pool.remove(this);
+        },
+        updateSize: function()
+        {
+             var box = new Box();
+             var angle = this.vector.angle;
+             for(var i=0; i < this.legs.length; i+=1)
+             {
+                 var legVector = this.legs[i].vector;
+                 var endPoint = new Point(0,0);
+                 endPoint.addVector(legVector.clone().rotate(angle));
+                 box.extend(endPoint);
+                                
+             }
+             this.box = box;
         },
         initLegs: function()
         {
@@ -109,7 +133,12 @@ define(function(require) {
 
                 this.legs.push(leg);
             }
+        },
+        getContainerBox: function(position)
+        {
+            return this.box.clone().moveTo(position || this.position);
         }
+
     };
 
     return Microb;

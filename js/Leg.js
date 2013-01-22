@@ -1,7 +1,7 @@
 define(function(require) {
     'use strict';
 
-    var Vector = require('Vector');
+    var Vector = require('geometry/Vector');
 
     function Leg()
     {

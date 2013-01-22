@@ -1,8 +1,8 @@
 define(function(require) {
     'use strict';
-    var Point = require('point');
+    var Point = require('geometry/Point');
     var Leg = require('Leg');
-    var Vector = require('Vector');
+    var Vector = require('geometry/Vector');
     
     function PoolRenderer(canvas)
     {
@@ -33,18 +33,25 @@ define(function(require) {
         {
 
             //ctx.strokeStyle = this.color;
-            var center = this.poolToCanvas(microb.position);
-            var radius = microb.size * this.ratio;
-
-            this.canvas.fillStyle = microb.color//this.color;
+            var box = microb.getContainerBox();
+            var leftTop = this.poolToCanvas(box.leftTop);
+            var rightBottom = this.poolToCanvas(box.rightBottom);
+            
+            //var radius = microb.size * this.ratio;
+//
+            //this.canvas.fillStyle = microb.color//this.color;
+            //this.canvas.beginPath();
+            //this.canvas.arc(center.x, center.y, radius, 0, Vector.TWO_PI);
+            //this.canvas.fill();
             this.canvas.beginPath();
-            this.canvas.arc(center.x, center.y, radius, 0, Vector.TWO_PI);
-            this.canvas.fill();
-            this.renderLegs(center, microb);
-
+            this.canvas.rect(leftTop.x, leftTop.y,rightBottom.x - leftTop.x, rightBottom.y - leftTop.y  )
+            this.canvas.stroke();
+            //this.renderLegs(leftTop, microb);
+            
         },
         renderLegs: function(center, microb)
         {
+            var c = this.canvas;
             for (var i = 0, len = microb.legs.length; i < len; i++)
             {
 
@@ -54,11 +61,11 @@ define(function(require) {
                 var legEnd = microb.position.clone().addVector(legVector);
 
                 var legEndPos = this.poolToCanvas(legEnd);
-                this.canvas.beginPath();
-                this.canvas.strokeStyle = PoolRenderer.legTypeToColor[leg.type];
-                this.canvas.moveTo(center.x, center.y);
-                this.canvas.lineTo(legEndPos.x, legEndPos.y);
-                this.canvas.stroke();
+                c.beginPath();
+                c.strokeStyle = PoolRenderer.legTypeToColor[leg.type];
+                c.moveTo(center.x, center.y);
+                c.lineTo(legEndPos.x, legEndPos.y);
+                c.stroke();
 
             }
         }
